@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.umeframework.wechat.sample.entity">
+  <!-- 唱片曲目信息 [ALBUM_TRACK] -->
+  
+  <!-- Insert one -->
+  <insert id="ALBUM_TRACK_INSERT" parameterType="org.umeframework.wechat.sample.entity.AlbumTrackDto">
+    INSERT INTO ALBUM_TRACK (
+      ALBUM_CODE,
+      TRACK_NO,
+      TRACK_NAME,
+      REMARK,
+      CREATE_AUTHOR,
+      CREATE_DATETIME,
+      UPDATE_AUTHOR,
+      UPDATE_DATETIME
+    ) VALUES (
+      #{albumCode},
+      #{trackNo},
+      #{trackName},
+      #{remark},
+      #{createAuthor},
+      current_timestamp(),
+      #{updateAuthor},
+      current_timestamp()
+    )
+  </insert>
+
+  <!-- Update with optimism check) -->
+  <update id="ALBUM_TRACK_UPDATE" parameterType="org.umeframework.wechat.sample.entity.AlbumTrackDto">
+    UPDATE ALBUM_TRACK
+    SET
+      TRACK_NAME = #{trackName},
+      REMARK = #{remark},
+      CREATE_AUTHOR = #{createAuthor},
+      CREATE_DATETIME = #{createDatetime},
+      UPDATE_AUTHOR = #{updateAuthor},
+      UPDATE_DATETIME = current_timestamp() 
+    WHERE UPDATE_DATETIME = #{updateDatetime}
+      AND ALBUM_CODE = #{albumCode}
+      AND TRACK_NO = #{trackNo}
+      <if test="updateDatetime!=null"> AND UPDATE_DATETIME = #{updateDatetime}</if>
+  </update>
+
+  <!-- Smart update -->
+  <update id="ALBUM_TRACK_SMART_UPDATE" parameterType="org.umeframework.wechat.sample.entity.AlbumTrackDto">
+    UPDATE ALBUM_TRACK
+    <set>
+      <if test="trackName!=null">TRACK_NAME = #{trackName},</if>
+      <if test="remark!=null">REMARK = #{remark},</if>
+      <if test="createAuthor!=null">CREATE_AUTHOR = #{createAuthor},</if>
+      <if test="createDatetime!=null">CREATE_DATETIME = #{createDatetime},</if>
+      <if test="updateAuthor!=null">UPDATE_AUTHOR = #{updateAuthor},</if>
+      UPDATE_DATETIME = current_timestamp()
+    </set>
+    WHERE 
+       ALBUM_CODE = #{albumCode}
+       AND  TRACK_NO = #{trackNo}
+      <if test="updateDatetime!=null"> AND UPDATE_DATETIME = #{updateDatetime}</if>
+  </update>
+  
+  <!-- Delete one -->
+  <delete id="ALBUM_TRACK_DELETE" parameterType="org.umeframework.wechat.sample.entity.AlbumTrackDto">
+    DELETE FROM ALBUM_TRACK
+    WHERE
+      ALBUM_CODE = #{albumCode} AND 
+      TRACK_NO = #{trackNo} 
+  </delete>
+
+  <!-- Find by primary key -->
+  <select id="ALBUM_TRACK_FIND" resultType="org.umeframework.wechat.sample.entity.AlbumTrackDto">
+    SELECT
+      ALBUM_CODE AS "albumCode",
+      TRACK_NO AS "trackNo",
+      TRACK_NAME AS "trackName",
+      REMARK AS "remark",
+      CREATE_AUTHOR AS "createAuthor",
+      CREATE_DATETIME AS "createDatetime",
+      UPDATE_AUTHOR AS "updateAuthor",
+      UPDATE_DATETIME AS "updateDatetime"
+    FROM ALBUM_TRACK
+    WHERE
+      ALBUM_CODE = #{albumCode} AND 
+      TRACK_NO = #{trackNo} 
+  </select>
+
+  <!-- Find by primary key for update with row lock -->
+  <select id="ALBUM_TRACK_FIND_FOR_UPDATE" resultType="org.umeframework.wechat.sample.entity.AlbumTrackDto">
+    SELECT
+      ALBUM_CODE AS "albumCode",
+      TRACK_NO AS "trackNo",
+      TRACK_NAME AS "trackName",
+      REMARK AS "remark",
+      CREATE_AUTHOR AS "createAuthor",
+      CREATE_DATETIME AS "createDatetime",
+      UPDATE_AUTHOR AS "updateAuthor",
+      UPDATE_DATETIME AS "updateDatetime"
+    FROM ALBUM_TRACK
+    WHERE
+      ALBUM_CODE = #{albumCode} AND 
+      TRACK_NO = #{trackNo} 
+    FOR UPDATE
+  </select>
+
+  <!-- Search -->
+  <select id="ALBUM_TRACK_SEARCH" resultType="org.umeframework.wechat.sample.entity.AlbumTrackDto">
+    SELECT
+      ALBUM_CODE AS "albumCode",
+      TRACK_NO AS "trackNo",
+      TRACK_NAME AS "trackName",
+      REMARK AS "remark",
+      CREATE_AUTHOR AS "createAuthor",
+      CREATE_DATETIME AS "createDatetime",
+      UPDATE_AUTHOR AS "updateAuthor",
+      UPDATE_DATETIME AS "updateDatetime"
+    FROM ALBUM_TRACK
+    WHERE 1 = 1 
+      <if test="albumCode != null">AND ALBUM_CODE = #{albumCode}</if>
+      <if test="trackNo != null">AND TRACK_NO = #{trackNo}</if>
+      <if test="trackName != null">AND TRACK_NAME = #{trackName}</if>
+      <if test="remark != null">AND REMARK = #{remark}</if>
+      <if test="createAuthor != null">AND CREATE_AUTHOR = #{createAuthor}</if>
+      <if test="updateAuthor != null">AND UPDATE_AUTHOR = #{updateAuthor}</if>
+      <if test="createDatetime != null">AND CREATE_DATETIME &gt; #{createDatetime}</if>
+      <if test="updateDatetime != null">AND UPDATE_DATETIME &gt; #{updateDatetime}</if>
+    <if test="theOrderByCondition != null"> ORDER BY ${theOrderByCondition}</if>
+    <if test="theGroupByCondition != null"> GROUP BY ${theGroupByCondition}</if>
+    <if test="theFetchSize != null">LIMIT ${theFetchStart} , ${theFetchSize}</if>
+  </select>
+
+  <!-- Like Search -->
+  <select id="ALBUM_TRACK_LIKE_SEARCH" resultType="org.umeframework.wechat.sample.entity.AlbumTrackDto">
+    SELECT
+      ALBUM_CODE AS "albumCode",
+      TRACK_NO AS "trackNo",
+      TRACK_NAME AS "trackName",
+      REMARK AS "remark",
+      CREATE_AUTHOR AS "createAuthor",
+      CREATE_DATETIME AS "createDatetime",
+      UPDATE_AUTHOR AS "updateAuthor",
+      UPDATE_DATETIME AS "updateDatetime"
+    FROM ALBUM_TRACK
+    WHERE 1 = 1 
+      <if test="albumCode != null">AND ALBUM_CODE LIKE CONCAT('%', #{albumCode}, '%')</if>
+      <if test="trackNo != null">AND TRACK_NO LIKE CONCAT('%', #{trackNo}, '%')</if>
+      <if test="trackName != null">AND TRACK_NAME LIKE CONCAT('%', #{trackName}, '%')</if>
+      <if test="remark != null">AND REMARK LIKE CONCAT('%', #{remark}, '%')</if>
+      <if test="createAuthor != null">AND CREATE_AUTHOR LIKE CONCAT('%', #{createAuthor}, '%')</if>
+      <if test="updateAuthor != null">AND UPDATE_AUTHOR LIKE CONCAT('%', #{updateAuthor}, '%')</if>
+      <if test="createDatetime != null">AND CREATE_DATETIME &gt; #{createDatetime}</if>
+      <if test="updateDatetime != null">AND UPDATE_DATETIME &gt; #{updateDatetime}</if>
+    <if test="theOrderByCondition != null"> ORDER BY ${theOrderByCondition}</if>
+    <if test="theGroupByCondition != null"> GROUP BY ${theGroupByCondition}</if>
+    <if test="theFetchSize != null">LIMIT ${theFetchStart} , ${theFetchSize}</if>    
+  </select>
+  
+  <!-- Dynamic Search -->
+  <select id="ALBUM_TRACK_DYNA_SEARCH" resultType="org.umeframework.wechat.sample.entity.AlbumTrackDto">
+    SELECT
+      ALBUM_CODE AS "albumCode",
+      TRACK_NO AS "trackNo",
+      TRACK_NAME AS "trackName",
+      REMARK AS "remark",
+      CREATE_AUTHOR AS "createAuthor",
+      CREATE_DATETIME AS "createDatetime",
+      UPDATE_AUTHOR AS "updateAuthor",
+      UPDATE_DATETIME AS "updateDatetime"
+    FROM ALBUM_TRACK
+    WHERE 1 = 1 
+      <if test="albumCode != null">AND ( ${albumCode} )</if>
+      <if test="trackNo != null">AND ( ${trackNo} )</if>
+      <if test="trackName != null">AND ( ${trackName} )</if>
+      <if test="remark != null">AND ( ${remark} )</if>
+      <if test="theSQLCondition != null"> AND ( ${theSQLCondition} )</if>
+      <if test="theOrderByCondition != null"> ORDER BY ${theOrderByCondition}</if>
+      <if test="theGroupByCondition != null"> GROUP BY ${theGroupByCondition}</if>
+      <if test="theFetchSize != null">LIMIT ${theFetchStart} , ${theFetchSize}</if>
+  </select>
+  
+  <!-- Count by input condition -->
+  <select id="ALBUM_TRACK_COUNT" resultType="java.lang.Integer">
+    SELECT count(*)
+    FROM ALBUM_TRACK
+    WHERE 1 = 1 
+      <if test="theSQLCondition != null"> AND ( ${theSQLCondition} )</if>
+      <if test="albumCode != null">AND ALBUM_CODE = #{albumCode}</if>
+      <if test="trackNo != null">AND TRACK_NO = #{trackNo}</if>
+      <if test="trackName != null">AND TRACK_NAME = #{trackName}</if>
+      <if test="remark != null">AND REMARK = #{remark}</if>
+  </select>
+
+</mapper>
+

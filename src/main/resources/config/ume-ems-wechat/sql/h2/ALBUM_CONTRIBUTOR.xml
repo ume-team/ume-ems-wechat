@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.umeframework.wechat.sample.entity">
+  <!-- 唱片参与表演者 [ALBUM_CONTRIBUTOR] -->
+  
+  <!-- Insert one -->
+  <insert id="ALBUM_CONTRIBUTOR_INSERT" parameterType="org.umeframework.wechat.sample.entity.AlbumContributorDto">
+    INSERT INTO ALBUM_CONTRIBUTOR (
+      ALBUM_CODE,
+      CONTRIBUTOR,
+      CONTRIBUTED_TRACK,
+      REMARK,
+      CREATE_AUTHOR,
+      CREATE_DATETIME,
+      UPDATE_AUTHOR,
+      UPDATE_DATETIME
+    ) VALUES (
+      #{albumCode},
+      #{contributor},
+      #{contributedTrack},
+      #{remark},
+      #{createAuthor},
+      current_timestamp(),
+      #{updateAuthor},
+      current_timestamp()
+    )
+  </insert>
+
+  <!-- Update with optimism check) -->
+  <update id="ALBUM_CONTRIBUTOR_UPDATE" parameterType="org.umeframework.wechat.sample.entity.AlbumContributorDto">
+    UPDATE ALBUM_CONTRIBUTOR
+    SET
+      REMARK = #{remark},
+      CREATE_AUTHOR = #{createAuthor},
+      CREATE_DATETIME = #{createDatetime},
+      UPDATE_AUTHOR = #{updateAuthor},
+      UPDATE_DATETIME = current_timestamp() 
+    WHERE UPDATE_DATETIME = #{updateDatetime}
+      AND ALBUM_CODE = #{albumCode}
+      AND CONTRIBUTOR = #{contributor}
+      AND CONTRIBUTED_TRACK = #{contributedTrack}
+      <if test="updateDatetime!=null"> AND UPDATE_DATETIME = #{updateDatetime}</if>
+  </update>
+
+  <!-- Smart update -->
+  <update id="ALBUM_CONTRIBUTOR_SMART_UPDATE" parameterType="org.umeframework.wechat.sample.entity.AlbumContributorDto">
+    UPDATE ALBUM_CONTRIBUTOR
+    <set>
+      <if test="remark!=null">REMARK = #{remark},</if>
+      <if test="createAuthor!=null">CREATE_AUTHOR = #{createAuthor},</if>
+      <if test="createDatetime!=null">CREATE_DATETIME = #{createDatetime},</if>
+      <if test="updateAuthor!=null">UPDATE_AUTHOR = #{updateAuthor},</if>
+      UPDATE_DATETIME = current_timestamp()
+    </set>
+    WHERE 
+       ALBUM_CODE = #{albumCode}
+       AND  CONTRIBUTOR = #{contributor}
+       AND  CONTRIBUTED_TRACK = #{contributedTrack}
+      <if test="updateDatetime!=null"> AND UPDATE_DATETIME = #{updateDatetime}</if>
+  </update>
+  
+  <!-- Delete one -->
+  <delete id="ALBUM_CONTRIBUTOR_DELETE" parameterType="org.umeframework.wechat.sample.entity.AlbumContributorDto">
+    DELETE FROM ALBUM_CONTRIBUTOR
+    WHERE
+      ALBUM_CODE = #{albumCode} AND 
+      CONTRIBUTOR = #{contributor} AND 
+      CONTRIBUTED_TRACK = #{contributedTrack} 
+  </delete>
+
+  <!-- Find by primary key -->
+  <select id="ALBUM_CONTRIBUTOR_FIND" resultType="org.umeframework.wechat.sample.entity.AlbumContributorDto">
+    SELECT
+      ALBUM_CODE AS "albumCode",
+      CONTRIBUTOR AS "contributor",
+      CONTRIBUTED_TRACK AS "contributedTrack",
+      REMARK AS "remark",
+      CREATE_AUTHOR AS "createAuthor",
+      CREATE_DATETIME AS "createDatetime",
+      UPDATE_AUTHOR AS "updateAuthor",
+      UPDATE_DATETIME AS "updateDatetime"
+    FROM ALBUM_CONTRIBUTOR
+    WHERE
+      ALBUM_CODE = #{albumCode} AND 
+      CONTRIBUTOR = #{contributor} AND 
+      CONTRIBUTED_TRACK = #{contributedTrack} 
+  </select>
+
+  <!-- Find by primary key for update with row lock -->
+  <select id="ALBUM_CONTRIBUTOR_FIND_FOR_UPDATE" resultType="org.umeframework.wechat.sample.entity.AlbumContributorDto">
+    SELECT
+      ALBUM_CODE AS "albumCode",
+      CONTRIBUTOR AS "contributor",
+      CONTRIBUTED_TRACK AS "contributedTrack",
+      REMARK AS "remark",
+      CREATE_AUTHOR AS "createAuthor",
+      CREATE_DATETIME AS "createDatetime",
+      UPDATE_AUTHOR AS "updateAuthor",
+      UPDATE_DATETIME AS "updateDatetime"
+    FROM ALBUM_CONTRIBUTOR
+    WHERE
+      ALBUM_CODE = #{albumCode} AND 
+      CONTRIBUTOR = #{contributor} AND 
+      CONTRIBUTED_TRACK = #{contributedTrack} 
+    FOR UPDATE
+  </select>
+
+  <!-- Search -->
+  <select id="ALBUM_CONTRIBUTOR_SEARCH" resultType="org.umeframework.wechat.sample.entity.AlbumContributorDto">
+    SELECT
+      ALBUM_CODE AS "albumCode",
+      CONTRIBUTOR AS "contributor",
+      CONTRIBUTED_TRACK AS "contributedTrack",
+      REMARK AS "remark",
+      CREATE_AUTHOR AS "createAuthor",
+      CREATE_DATETIME AS "createDatetime",
+      UPDATE_AUTHOR AS "updateAuthor",
+      UPDATE_DATETIME AS "updateDatetime"
+    FROM ALBUM_CONTRIBUTOR
+    WHERE 1 = 1 
+      <if test="albumCode != null">AND ALBUM_CODE = #{albumCode}</if>
+      <if test="contributor != null">AND CONTRIBUTOR = #{contributor}</if>
+      <if test="contributedTrack != null">AND CONTRIBUTED_TRACK = #{contributedTrack}</if>
+      <if test="remark != null">AND REMARK = #{remark}</if>
+      <if test="createAuthor != null">AND CREATE_AUTHOR = #{createAuthor}</if>
+      <if test="updateAuthor != null">AND UPDATE_AUTHOR = #{updateAuthor}</if>
+      <if test="createDatetime != null">AND CREATE_DATETIME &gt; #{createDatetime}</if>
+      <if test="updateDatetime != null">AND UPDATE_DATETIME &gt; #{updateDatetime}</if>
+    <if test="theOrderByCondition != null"> ORDER BY ${theOrderByCondition}</if>
+    <if test="theGroupByCondition != null"> GROUP BY ${theGroupByCondition}</if>
+    <if test="theFetchSize != null">LIMIT ${theFetchStart} , ${theFetchSize}</if>
+  </select>
+
+  <!-- Like Search -->
+  <select id="ALBUM_CONTRIBUTOR_LIKE_SEARCH" resultType="org.umeframework.wechat.sample.entity.AlbumContributorDto">
+    SELECT
+      ALBUM_CODE AS "albumCode",
+      CONTRIBUTOR AS "contributor",
+      CONTRIBUTED_TRACK AS "contributedTrack",
+      REMARK AS "remark",
+      CREATE_AUTHOR AS "createAuthor",
+      CREATE_DATETIME AS "createDatetime",
+      UPDATE_AUTHOR AS "updateAuthor",
+      UPDATE_DATETIME AS "updateDatetime"
+    FROM ALBUM_CONTRIBUTOR
+    WHERE 1 = 1 
+      <if test="albumCode != null">AND ALBUM_CODE LIKE CONCAT('%', #{albumCode}, '%')</if>
+      <if test="contributor != null">AND CONTRIBUTOR LIKE CONCAT('%', #{contributor}, '%')</if>
+      <if test="contributedTrack != null">AND CONTRIBUTED_TRACK LIKE CONCAT('%', #{contributedTrack}, '%')</if>
+      <if test="remark != null">AND REMARK LIKE CONCAT('%', #{remark}, '%')</if>
+      <if test="createAuthor != null">AND CREATE_AUTHOR LIKE CONCAT('%', #{createAuthor}, '%')</if>
+      <if test="updateAuthor != null">AND UPDATE_AUTHOR LIKE CONCAT('%', #{updateAuthor}, '%')</if>
+      <if test="createDatetime != null">AND CREATE_DATETIME &gt; #{createDatetime}</if>
+      <if test="updateDatetime != null">AND UPDATE_DATETIME &gt; #{updateDatetime}</if>
+    <if test="theOrderByCondition != null"> ORDER BY ${theOrderByCondition}</if>
+    <if test="theGroupByCondition != null"> GROUP BY ${theGroupByCondition}</if>
+    <if test="theFetchSize != null">LIMIT ${theFetchStart} , ${theFetchSize}</if>    
+  </select>
+  
+  <!-- Dynamic Search -->
+  <select id="ALBUM_CONTRIBUTOR_DYNA_SEARCH" resultType="org.umeframework.wechat.sample.entity.AlbumContributorDto">
+    SELECT
+      ALBUM_CODE AS "albumCode",
+      CONTRIBUTOR AS "contributor",
+      CONTRIBUTED_TRACK AS "contributedTrack",
+      REMARK AS "remark",
+      CREATE_AUTHOR AS "createAuthor",
+      CREATE_DATETIME AS "createDatetime",
+      UPDATE_AUTHOR AS "updateAuthor",
+      UPDATE_DATETIME AS "updateDatetime"
+    FROM ALBUM_CONTRIBUTOR
+    WHERE 1 = 1 
+      <if test="albumCode != null">AND ( ${albumCode} )</if>
+      <if test="contributor != null">AND ( ${contributor} )</if>
+      <if test="contributedTrack != null">AND ( ${contributedTrack} )</if>
+      <if test="remark != null">AND ( ${remark} )</if>
+      <if test="theSQLCondition != null"> AND ( ${theSQLCondition} )</if>
+      <if test="theOrderByCondition != null"> ORDER BY ${theOrderByCondition}</if>
+      <if test="theGroupByCondition != null"> GROUP BY ${theGroupByCondition}</if>
+      <if test="theFetchSize != null">LIMIT ${theFetchStart} , ${theFetchSize}</if>
+  </select>
+  
+  <!-- Count by input condition -->
+  <select id="ALBUM_CONTRIBUTOR_COUNT" resultType="java.lang.Integer">
+    SELECT count(*)
+    FROM ALBUM_CONTRIBUTOR
+    WHERE 1 = 1 
+      <if test="theSQLCondition != null"> AND ( ${theSQLCondition} )</if>
+      <if test="albumCode != null">AND ALBUM_CODE = #{albumCode}</if>
+      <if test="contributor != null">AND CONTRIBUTOR = #{contributor}</if>
+      <if test="contributedTrack != null">AND CONTRIBUTED_TRACK = #{contributedTrack}</if>
+      <if test="remark != null">AND REMARK = #{remark}</if>
+  </select>
+
+</mapper>
+
